@@ -1,0 +1,14 @@
+# Python bytecode and egg files
+__pycache__/
+*.egg-info/
+*.py[cod]
+
+# Environment and build directories
+build/
+dist/
+*.local
+.venv/
+.env
+
+# Testing and coverage
+.playwright-mcp/
