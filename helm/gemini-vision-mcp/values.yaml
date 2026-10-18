@@ -1,0 +1,79 @@
+replicaCount: 1
+
+image:
+  repository: gemini-vision-mcp
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# MCP transport: "http" (recommended for clusters) or "stdio".
+transport: http
+host: "0.0.0.0"
+port: 3000
+
+service:
+  type: ClusterIP
+  port: 3000
+
+config:
+  model: gemini-3.1-flash-live-preview
+  tpmLimit: 4000000
+  rateLimitRequests: 10
+  rateLimitWindowSeconds: 60
+
+# Provide the key inline (creates a Secret) or reference an existing one.
+# Never commit a real key in values.
+apiKey:
+  value: ""
+  existingSecret: ""
+  secretKey: GOOGLE_API_KEY
+
+# Bearer token required by /mcp. Leave `value` empty and the chart generates a
+# random token and keeps it across upgrades (stored in the release Secret).
+# Retrieve it with the command printed by `helm install` NOTES.
+authToken:
+  value: ""
+  existingSecret: ""
+  secretKey: MCP_AUTH_TOKEN
+
+# Extra Host header hostnames allowed to reach the service (port-agnostic).
+# The service DNS names are always allowed; use ["*"] only behind a trusted proxy.
+allowedHosts: []
+
+# Exact Origin values allowed to call /mcp from a browser (usually empty).
+allowedOrigins: []
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Pod/container hardening. The image already runs as the non-root `node` user.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+probes:
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 30
+  readiness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10

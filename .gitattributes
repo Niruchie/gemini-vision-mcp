@@ -1,0 +1,20 @@
+# LF in the repository and in every working tree, regardless of platform or core.autocrlf.
+* text=auto eol=lf
+
+# Media the tools handle - never treated as text (no EOL conversion, no diff).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.bmp binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.flac binary
+*.m4a binary
+*.mp4 binary
+*.webm binary
+*.avi binary
+*.mov binary
+*.mkv binary

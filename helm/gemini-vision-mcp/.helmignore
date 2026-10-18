@@ -1,0 +1,3 @@
+.DS_Store
+# Mirrors .gitignore output patterns for helm package archives
+*.tgz

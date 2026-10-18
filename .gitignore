@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment / credentials - never commit these, only .env.example
+.env
+.env.*
+!.env.example
+
+# Test & coverage artifacts
+coverage/
+
+# Logs
+*.log
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Helm / packaging
+*.tgz
+values.local.yaml
+
+# Local backups
+pnpm-lock.yaml.bak

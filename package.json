@@ -1,0 +1,38 @@
+{
+  "name": "gemini-vision-mcp",
+  "version": "0.1.0",
+  "description": "Gemini Vision MCP - Describe video, image, audio and text using the Gemini Live API.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "bin": {
+    "gemini-vision-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "start:http": "node dist/index.js --transport http",
+    "dev": "tsx src/index.ts",
+    "dev:http": "tsx src/index.ts --transport http",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:live": "cross-env LIVE_TEST=1 vitest run tests/live.test.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^1.15.0",
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.7.4",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

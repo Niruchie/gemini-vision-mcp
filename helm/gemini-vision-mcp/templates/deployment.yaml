@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gemini-vision-mcp.fullname" . }}
+  labels:
+    {{- include "gemini-vision-mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gemini-vision-mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gemini-vision-mcp.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          {{- if eq .Values.transport "http" }}
+          args:
+            - node
+            - dist/index.js
+            - --transport
+            - http
+            - --host
+            - {{ .Values.host | quote }}
+            - --port
+            - {{ .Values.port | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          {{- if .Values.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          {{- end }}
+          {{- if .Values.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          {{- end }}
+          {{- end }}
+          env:
+            - name: MCP_TRANSPORT
+              value: {{ .Values.transport | quote }}
+            - name: HOST
+              value: {{ .Values.host | quote }}
+            - name: PORT
+              value: {{ .Values.port | quote }}
+            - name: GEMINI_MODEL
+              value: {{ .Values.config.model | quote }}
+            - name: GEMINI_TPM_LIMIT
+              value: {{ printf "%.0f" (.Values.config.tpmLimit | float64) | quote }}
+            - name: RATE_LIMIT_REQUESTS
+              value: {{ .Values.config.rateLimitRequests | quote }}
+            - name: RATE_LIMIT_WINDOW_SECONDS
+              value: {{ .Values.config.rateLimitWindowSeconds | quote }}
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gemini-vision-mcp.apiSecretName" . }}
+                  key: {{ .Values.apiKey.secretKey }}
+            - name: MCP_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gemini-vision-mcp.authSecretName" . }}
+                  key: {{ .Values.authToken.secretKey }}
+            - name: MCP_ALLOWED_HOSTS
+              value: {{ include "gemini-vision-mcp.allowedHosts" . | quote }}
+            {{- if .Values.allowedOrigins }}
+            - name: MCP_ALLOWED_ORIGINS
+              value: {{ join "," .Values.allowedOrigins | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

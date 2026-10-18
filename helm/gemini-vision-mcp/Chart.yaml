@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gemini-vision-mcp
+description: MCP server for describing media with the Gemini Live API
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

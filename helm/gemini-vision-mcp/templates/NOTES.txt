@@ -1,0 +1,29 @@
+gemini-vision-mcp is deployed{{ if eq .Values.transport "http" }} with the HTTP transport{{ else }} with the stdio transport{{ end }}.
+
+{{- if eq .Values.transport "http" }}
+
+The /mcp endpoint requires a bearer token. Retrieve it with:
+
+  kubectl get secret {{ include "gemini-vision-mcp.authSecretName" . }} -n {{ .Release.Namespace }} \
+    -o jsonpath='{.data.{{ .Values.authToken.secretKey }}}' | base64 -d; echo
+
+Point your MCP client at:
+
+  http://{{ include "gemini-vision-mcp.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/mcp
+  Header: Authorization: Bearer <token above>
+
+The probe endpoint /health stays unauthenticated for kubelet.
+Allowed Host header values: {{ include "gemini-vision-mcp.allowedHosts" . }}
+{{- else }}
+
+The stdio transport is not reachable over the network; exec into the pod and
+drive it with an MCP client or `kubectl exec`.
+{{- end }}
+
+Notes:
+  - Secrets are read at container start - restart the pod after rotating them:
+      kubectl rollout restart deployment/{{ include "gemini-vision-mcp.fullname" . }} -n {{ .Release.Namespace }}
+  - The service is a ClusterIP on purpose. If you expose it (Ingress/LoadBalancer),
+    keep MCP_AUTH_TOKEN enabled and consider adding a NetworkPolicy.
+  - The media tools can read local files and fetch URLs reachable from the pod;
+    anyone who can call /mcp can use that access.
