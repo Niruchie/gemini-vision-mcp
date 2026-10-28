@@ -1,5 +1,7 @@
 # gemini-vision-mcp
 
+[![gemini-vision-mcp MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/Niruchie/gemini-vision-mcp/badges/card.svg)](https://glama.ai/mcp/servers/Niruchie/gemini-vision-mcp)
+
 MCP server for describing video, image, audio, and text using the Gemini Live API.
 
 Uses a persistent WebSocket session (Google GenAI Live API via [`@google/genai`](https://www.npmjs.com/package/@google/genai)) to describe media content through the [Model Context Protocol TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk).
@@ -14,9 +16,17 @@ Supports both stdio and Streamable HTTP transports (select with `--transport`).
 
 ## Install
 
+Install the published package directly from GitHub (the `prepare` script
+builds `dist/` automatically, so no manual build step is needed):
+
 ```bash
-pnpm install
-pnpm build
+npm install -g github:Niruchie/gemini-vision-mcp
+```
+
+Then run it as a command:
+
+```bash
+gemini-vision-mcp
 ```
 
 ## Configuration
