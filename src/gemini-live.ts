@@ -204,9 +204,10 @@ export class GeminiLiveClient {
         onmessage: (message) => {
           this.handleMessage(message);
         },
-        onerror: (e: Error) => {
-          console.error(`[gemini] Session error: ${e.message}`);
-          this.pending?.reject(e);
+        onerror: (e: ErrorEvent) => {
+          const err = e instanceof Error ? e : new Error(`Live session error: ${e.message}`);
+          console.error(`[gemini] Session error: ${err.message}`);
+          this.pending?.reject(err);
           this.pending = null;
         },
         onclose: (e: { reason?: string }) => {
